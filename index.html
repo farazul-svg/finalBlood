@@ -186,7 +186,7 @@
         <a href="#" onclick="showSection('donate')">রক্তদান করুন</a>
         <a href="#" onclick="showSection('request')">রক্ত খুঁজুন</a>
         <a href="#" onclick="showSection('motivation')">মোটিভেশন</a>
-        <a href="#" onclick="syncData()">ডাটা সিঙ্ক করুন <small>(সব ডিভাইসে আপডেট পেতে)</small></a>
+        <a href="#" onclick="syncData()">ডাটা সিঙ্ক করুন <small>(আপডেট করতে সিঙ্ক করুন)</small></a>
     </nav>
 
     <div id="syncStatus" class="sync-status hidden"></div>
@@ -335,18 +335,16 @@
     </section>
 
     <footer style="text-align:center; padding:1rem; background-color:#ff4d4d; color:white; margin-top:1rem;">
-        <p>© 2023 যশোর রক্তদাতা নেটওয়ার্ক</p>
-        <p>জরুরী প্রয়োজনে কল করুন: ০১৭XX-XXXXXX</p>
+        <p>© 2025 ডিজিটাল যশোর</p>
+        <p>জরুরী প্রয়োজনে কল করুন: ০১৭২৯-৬৯০৮৩৫</p>
     </footer>
 
     <script>
-    // Render.com এ দেওয়া URL ব্যবহার করুন
-      const API_URL = 'https://blood-donor-network.onrender.com/api/sync-donors';
-
+        const API_URL = 'https://blood-donor-network.onrender.com/api/sync-donors';
         
         // ==================== কনফিগারেশন ====================
         const GIST_ID = '2f40bd034c51e66cd46dfc581c4bfff3'; // আপনার Gist আইডি
-        const GH_TOKEN = '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'; // আপনার GitHub টোকেন
+        const GH_TOKEN = ''; // GitHub টোকেন সরিয়ে দিলাম, আপনি ব্যবহার করুন
 
         // ==================== ডাটা মডেল ====================
         let donors = [];
@@ -447,53 +445,39 @@
             }
         }
 
-        // ==================== GIST অপারেশন ====================
-        async function updateGist(data) {
+        // ==================== API অপারেশন ====================
+        async function syncWithAPI(data) {
             try {
-                const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
-                    method: 'PATCH',
+                const response = await fetch(API_URL, {
+                    method: 'POST',
                     headers: {
-                        'Authorization': `token ${GH_TOKEN}`,
                         'Content-Type': 'application/json',
-                        'Accept': 'application/vnd.github.v3+json'
                     },
-                    body: JSON.stringify({
-                        files: {
-                            'blood_donors.json': {
-                                content: JSON.stringify(data)
-                            }
-                        }
-                    })
+                    body: JSON.stringify(data)
                 });
 
                 if (!response.ok) {
-                    throw new Error(`GitHub error: ${response.status}`);
+                    throw new Error(`API error: ${response.status}`);
                 }
 
                 return await response.json();
             } catch (error) {
-                console.error('Gist update failed:', error);
+                console.error('API sync failed:', error);
                 throw error;
             }
         }
 
-        async function loadFromGist() {
+        async function loadFromAPI() {
             try {
-                const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
-                    headers: {
-                        'Authorization': `token ${GH_TOKEN}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
-                });
-
+                const response = await fetch(API_URL);
+                
                 if (!response.ok) {
-                    throw new Error(`GitHub error: ${response.status}`);
+                    throw new Error(`API error: ${response.status}`);
                 }
 
-                const gistData = await response.json();
-                return JSON.parse(gistData.files['blood_donors.json'].content);
+                return await response.json();
             } catch (error) {
-                console.error('Gist load failed:', error);
+                console.error('API load failed:', error);
                 throw error;
             }
         }
@@ -506,8 +490,8 @@
                 // 1. লোকাল ডাটা লোড করুন
                 const localData = JSON.parse(localStorage.getItem('bloodDonors')) || [];
                 
-                // 2. GitHub থেকে ডাটা আনুন
-                const remoteData = await loadFromGist();
+                // 2. API থেকে ডাটা আনুন
+                const remoteData = await loadFromAPI();
                 
                 // 3. ডাটা মার্জ করুন
                 const mergedData = mergeDonors(localData, remoteData);
@@ -516,8 +500,8 @@
                 localStorage.setItem('bloodDonors', JSON.stringify(mergedData));
                 donors = mergedData;
                 
-                // 5. GitHub এ আপডেট পাঠান
-                await updateGist(mergedData);
+                // 5. API এ আপডেট পাঠান
+                await syncWithAPI(mergedData);
                 
                 showSyncStatus('ডাটা সফলভাবে সিঙ্ক হয়েছে! সব ডিভাইসে এখন আপডেটেড ডাটা দেখাবে', true);
                 
@@ -526,11 +510,11 @@
                 
                 let errorMsg = 'সিঙ্ক করতে সমস্যা: ';
                 if (error.message.includes('Failed to fetch')) {
-                    errorMsg += 'ইন্টারনেট সংযোগ নেই বা GitHub ডাউন';
+                    errorMsg += 'ইন্টারনেট সংযোগ নেই বা API ডাউন';
                 } else if (error.message.includes('401')) {
-                    errorMsg += 'অনুমতি সমস্যা, GitHub টোকেন চেক করুন';
+                    errorMsg += 'অনুমতি সমস্যা';
                 } else if (error.message.includes('404')) {
-                    errorMsg += 'Gist খুঁজে পাওয়া যায়নি, Gist ID চেক করুন';
+                    errorMsg += 'API এন্ডপয়েন্ট খুঁজে পাওয়া যায়নি';
                 } else {
                     errorMsg += error.message;
                 }
@@ -574,9 +558,9 @@
             donors.push(donor);
             localStorage.setItem('bloodDonors', JSON.stringify(donors));
             
-            // GitHub এ সেভ করার চেষ্টা করুন
+            // API এ সেভ করার চেষ্টা করুন
             try {
-                await updateGist(donors);
+                await syncWithAPI(donors);
                 showSyncStatus('ধন্যবাদ! আপনার তথ্য সফলভাবে সংরক্ষণ করা হয়েছে', true);
             } catch (error) {
                 showSyncStatus('আপনার তথ্য লোকালে সেভ হয়েছে, কিন্তু অনলাইনে সেভ হয়নি। পরে আবার সিঙ্ক করুন', false);
