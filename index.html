@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>যশোর রক্তদাতা নেটওয়ার্ক | জীবন বাঁচান</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'SolaimanLipi', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffe6e6;
+            color: #333;
+            line-height: 1.6;
+        }
+        header {
+            background-color: #ff4d4d;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+        }
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            background-color: #ff3333;
+            padding: 0.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            background-color: #cc0000;
+            margin: 0.2rem;
+            font-size: 0.9rem;
+            flex-grow: 1;
+            text-align: center;
+        }
+        nav a:hover {
+            background-color: #ff0000;
+            transform: translateY(-2px);
+        }
+        section {
+            padding: 1rem;
+            margin: 0.5rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        form {
+            display: grid;
+            gap: 0.8rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        input, select, button {
+            padding: 0.7rem;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+        }
+        button {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #ff0000;
+        }
+        .quote {
+            font-style: italic;
+            color: #cc0000;
+            text-align: center;
+            margin: 1rem 0;
+            padding: 1rem;
+            background-color: #fff0f0;
+            border-radius: 8px;
+            font-size: 1.1rem;
+        }
+        .donor-card {
+            border: 1px solid #ff4d4d;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            background-color: #fffafa;
+        }
+        .hidden {
+            display: none;
+        }
+        .last-donation-note {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: -0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .motivation-box {
+            background-color: #fff0f0;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid #ff4d4d;
+        }
+        .fact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+        .fact-icon {
+            font-size: 1.3rem;
+            margin-right: 0.8rem;
+            color: #ff4d4d;
+        }
+        .sync-status {
+            text-align: center;
+            padding: 0.5rem;
+            margin: 0.5rem;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        .button-group button {
+            width: 100%;
+        }
+        .location-select {
+            display: grid;
+            gap: 0.8rem;
+        }
+        
+        @media (min-width: 768px) {
+            nav a {
+                font-size: 1rem;
+                padding: 0.5rem 1rem;
+                margin: 0.2rem;
+                flex-grow: 0;
+            }
+            section {
+                padding: 1.5rem;
+                margin: 1rem auto;
+                max-width: 800px;
+            }
+            .button-group {
+                flex-direction: row;
+                justify-content: center;
+            }
+            .button-group button {
+                width: auto;
+                padding: 1rem 2rem;
+            }
+            .location-select {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🩸 যশোর রক্তদাতা নেটওয়ার্ক</h1>
+        <p>একটি রক্তদান আজ একটি জীবন বাঁচাতে পারে</p>
+    </header>
+
+    <nav>
+        <a href="#" onclick="showSection('home')">হোম</a>
+        <a href="#" onclick="showSection('donate')">রক্তদান করুন</a>
+        <a href="#" onclick="showSection('request')">রক্ত খুঁজুন</a>
+        <a href="#" onclick="showSection('motivation')">মোটিভেশন</a>
+        <a href="#" onclick="syncData()">ডাটা সিঙ্ক করুন <small>(সব ডিভাইসে আপডেট পেতে)</small></a>
+    </nav>
+
+    <div id="syncStatus" class="sync-status hidden"></div>
+
+    <section id="home" class="section">
+        <h2>স্বাগতম!</h2>
+        <p>এই প্ল্যাটফর্মে যশোর জেলার রক্তদাতা ও রক্তপ্রার্থীদের সংযুক্ত করা হয়। নিচের বাটনে ক্লিক করে আজই একজন রক্তদাতা হিসাবে রেজিস্টার করুন অথবা প্রয়োজন হলে রক্ত খুঁজুন।</p>
+        <div class="quote" id="dynamicQuote"></div>
+        <div class="button-group">
+            <button onclick="showSection('donate')">আমি রক্তদান করতে চাই</button>
+            <button onclick="showSection('request')" style="background-color:#4CAF50;">আমার রক্ত প্রয়োজন</button>
+        </div>
+    </section>
+
+    <section id="donate" class="section hidden">
+        <h2>রক্তদাতা রেজিস্ট্রেশন</h2>
+        <p>নিচের ফর্মটি পূরণ করুন এবং একজন রক্তদাতা হিসাবে রেজিস্টার করুন। আপনার তথ্য রক্তপ্রার্থীদের দেখানো হবে।</p>
+        <form id="donorForm">
+            <input type="text" id="name" placeholder="নাম" required>
+            <input type="number" id="age" placeholder="বয়স" required min="18" max="65">
+            <select id="bloodGroup" required>
+                <option value="">রক্তের গ্রুপ নির্বাচন করুন</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+            </select>
+            <input type="tel" id="phone" placeholder="ফোন নম্বর" required>
+            
+            <div class="location-select">
+                <select id="division" required onchange="loadDistricts()">
+                    <option value="">বিভাগ নির্বাচন করুন</option>
+                    <option value="খুলনা">খুলনা</option>
+                </select>
+                
+                <select id="district" required onchange="loadUpazilas()">
+                    <option value="">জেলা নির্বাচন করুন</option>
+                    <option value="যশোর">যশোর</option>
+                </select>
+                
+                <select id="upazila" required>
+                    <option value="">উপজেলা নির্বাচন করুন</option>
+                    <option value="যশোর সদর">যশোর সদর</option>
+                    <option value="কেশবপুর">কেশবপুর</option>
+                    <option value="চৌগাছা">চৌগাছা</option>
+                    <option value="মনিরামপুর">মনিরামপুর</option>
+                    <option value="ঝিকরগাছা">ঝিকরগাছা</option>
+                    <option value="বাঘারপাড়া">বাঘারপাড়া</option>
+                    <option value="অভয়নগর">অভয়নগর</option>
+                    <option value="শার্শা">শার্শা</option>
+                </select>
+            </div>
+            
+            <label for="lastDonation">সর্বশেষ রক্তদানের তারিখ:</label>
+            <input type="date" id="lastDonation" required>
+            <p class="last-donation-note">* যদি প্রথমবার রক্ত দেন, তাহলে আজকের তারিখ নির্বাচন করুন</p>
+            <button type="submit">রক্তদাতা হিসাবে রেজিস্টার করুন</button>
+        </form>
+    </section>
+
+    <section id="request" class="section hidden">
+        <h2>রক্ত খুঁজুন</h2>
+        <p>প্রয়োজনীয় রক্তের গ্রুপ এবং এলাকা নির্বাচন করে রক্তদাতা খুঁজুন।</p>
+        <div style="max-width:500px; margin:0 auto;">
+            <select id="searchBlood" style="width:100%; margin-bottom:0.5rem;">
+                <option value="">রক্তের গ্রুপ নির্বাচন করুন</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+            </select>
+            
+            <div class="location-select">
+                <select id="searchDivision" style="width:100%;" onchange="loadSearchDistricts()">
+                    <option value="">বিভাগ নির্বাচন করুন</option>
+                    <option value="খুলনা">খুলনা</option>
+                </select>
+                
+                <select id="searchDistrict" style="width:100%;" onchange="loadSearchUpazilas()">
+                    <option value="">জেলা নির্বাচন করুন</option>
+                    <option value="যশোর">যশোর</option>
+                </select>
+                
+                <select id="searchUpazila" style="width:100%;">
+                    <option value="">উপজেলা নির্বাচন করুন</option>
+                    <option value="যশোর সদর">যশোর সদর</option>
+                    <option value="কেশবপুর">কেশবপুর</option>
+                    <option value="চৌগাছা">চৌগাছা</option>
+                    <option value="মনিরামপুর">মনিরামপুর</option>
+                    <option value="ঝিকরগাছা">ঝিকরগাছা</option>
+                    <option value="বাঘারপাড়া">বাঘারপাড়া</option>
+                    <option value="অভয়নগর">অভয়নগর</option>
+                    <option value="শার্শা">শার্শা</option>
+                </select>
+            </div>
+            
+            <button onclick="searchDonors()">রক্তদাতা খুঁজুন</button>
+            <div id="donorList"></div>
+        </div>
+    </section>
+
+    <section id="motivation" class="section hidden">
+        <h2 style="text-align:center; color:#ff4d4d;">রক্তদান - মহানুভবতার সর্বোচ্চ নিদর্শন</h2>
+        
+        <div class="motivation-box">
+            <h3>কেন রক্তদান করবেন?</h3>
+            <div class="fact-item">
+                <div class="fact-icon">❤️</div>
+                <div>এক ব্যাগ রক্ত তিনজন মানুষের জীবন বাঁচাতে পারে</div>
+            </div>
+            <div class="fact-item">
+                <div class="fact-icon">⏱️</div>
+                <div>প্রতি ২ সেকেন্ডে বিশ্বের কোথাও না কোথাও একজন মানুষের রক্তের প্রয়োজন হয়</div>
+            </div>
+            <div class="fact-item">
+                <div class="fact-icon">💪</div>
+                <div>রক্তদান করলে হৃদরোগের ঝুঁকি কমে যায় এবং শরীরে নতুন রক্তকণিকা তৈরি হয়</div>
+            </div>
+        </div>
+
+        <div class="motivation-box">
+            <h3>রক্তদানের উপকারিতা</h3>
+            <ul>
+                <li>রক্তদানের পর শরীর 24-48 ঘন্টার মধ্যে রক্তের পরিমাণ পুনরায় তৈরি করে ফেলে</li>
+                <li>নিয়মিত রক্তদান করলে লিভার ও হার্ট ভালো থাকে</li>
+                <li>রক্তদানের মাধ্যমে ফ্রি হেলথ চেকআপ হয় (রক্তচাপ, হিমোগ্লোবিন লেভেল ইত্যাদি)</li>
+                <li>একজন মানুষের জীবন বাঁচানোর আনন্দ অমূল্য</li>
+            </ul>
+        </div>
+
+        <div class="quote">
+            <p>"রক্তদান এমন একটি মহৎ কাজ যার মাধ্যমে আপনি সরাসরি একজন মানুষের জীবন বাঁচাতে পারেন। এটি মানবতার সবচেয়ে বড় সেবা।"</p>
+        </div>
+
+        <div style="text-align:center; margin-top:1rem;">
+            <button onclick="showSection('donate')">আমিও রক্তদান করতে চাই</button>
+        </div>
+    </section>
+
+    <footer style="text-align:center; padding:1rem; background-color:#ff4d4d; color:white; margin-top:1rem;">
+        <p>© 2023 যশোর রক্তদাতা নেটওয়ার্ক</p>
+        <p>জরুরী প্রয়োজনে কল করুন: ০১৭XX-XXXXXX</p>
+    </footer>
+
+    <script>
+        // ==================== কনফিগারেশন ====================
+        const GIST_ID = '2f40bd034c51e66cd46dfc581c4bfff3'; // আপনার Gist আইডি
+        const GH_TOKEN = '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'; // আপনার GitHub টোকেন
+
+        // ==================== ডাটা মডেল ====================
+        let donors = [];
+        const upazilas = {
+            'যশোর': ['যশোর সদর', 'কেশবপুর', 'চৌগাছা', 'মনিরামপুর', 'ঝিকরগাছা', 'বাঘারপাড়া', 'অভয়নগর', 'শার্শা']
+        };
+
+        // ==================== ইউটিলিটি ফাংশন ====================
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.getElementById(sectionId).classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        function showSyncStatus(message, isSuccess) {
+            const statusDiv = document.getElementById('syncStatus');
+            statusDiv.textContent = message;
+            statusDiv.className = isSuccess ? 'sync-status success' : 'sync-status error';
+            statusDiv.classList.remove('hidden');
+            
+            setTimeout(() => {
+                statusDiv.classList.add('hidden');
+            }, 5000);
+        }
+
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('bn-BD', options);
+        }
+
+        function canDonateAgain(lastDonationDate) {
+            const lastDate = new Date(lastDonationDate);
+            const currentDate = new Date();
+            const diffInMonths = (currentDate - lastDate) / (30 * 24 * 60 * 60 * 1000);
+            return diffInMonths >= 3;
+        }
+
+        // ==================== লোকেশন সিলেক্টর ====================
+        function loadDistricts() {
+            const division = document.getElementById('division').value;
+            const districtSelect = document.getElementById('district');
+            
+            districtSelect.innerHTML = '<option value="">জেলা নির্বাচন করুন</option>';
+            
+            if (division === 'খুলনা') {
+                const option = document.createElement('option');
+                option.value = 'যশোর';
+                option.textContent = 'যশোর';
+                districtSelect.appendChild(option);
+            }
+        }
+
+        function loadUpazilas() {
+            const district = document.getElementById('district').value;
+            const upazilaSelect = document.getElementById('upazila');
+            
+            upazilaSelect.innerHTML = '<option value="">উপজেলা নির্বাচন করুন</option>';
+            
+            if (district && upazilas[district]) {
+                upazilas[district].forEach(upazila => {
+                    const option = document.createElement('option');
+                    option.value = upazila;
+                    option.textContent = upazila;
+                    upazilaSelect.appendChild(option);
+                });
+            }
+        }
+
+        function loadSearchDistricts() {
+            const division = document.getElementById('searchDivision').value;
+            const districtSelect = document.getElementById('searchDistrict');
+            
+            districtSelect.innerHTML = '<option value="">জেলা নির্বাচন করুন</option>';
+            
+            if (division === 'খুলনা') {
+                const option = document.createElement('option');
+                option.value = 'যশোর';
+                option.textContent = 'যশোর';
+                districtSelect.appendChild(option);
+            }
+        }
+
+        function loadSearchUpazilas() {
+            const district = document.getElementById('searchDistrict').value;
+            const upazilaSelect = document.getElementById('searchUpazila');
+            
+            upazilaSelect.innerHTML = '<option value="">উপজেলা নির্বাচন করুন</option>';
+            
+            if (district && upazilas[district]) {
+                upazilas[district].forEach(upazila => {
+                    const option = document.createElement('option');
+                    option.value = upazila;
+                    option.textContent = upazila;
+                    upazilaSelect.appendChild(option);
+                });
+            }
+        }
+
+        // ==================== GIST অপারেশন ====================
+        async function updateGist(data) {
+            try {
+                const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `token ${GH_TOKEN}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/vnd.github.v3+json'
+                    },
+                    body: JSON.stringify({
+                        files: {
+                            'blood_donors.json': {
+                                content: JSON.stringify(data)
+                            }
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`GitHub error: ${response.status}`);
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error('Gist update failed:', error);
+                throw error;
+            }
+        }
+
+        async function loadFromGist() {
+            try {
+                const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                    headers: {
+                        'Authorization': `token ${GH_TOKEN}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`GitHub error: ${response.status}`);
+                }
+
+                const gistData = await response.json();
+                return JSON.parse(gistData.files['blood_donors.json'].content);
+            } catch (error) {
+                console.error('Gist load failed:', error);
+                throw error;
+            }
+        }
+
+        // ==================== সিঙ্ক ফাংশন ====================
+        async function syncData() {
+            showSyncStatus('ডাটা সিঙ্ক করা হচ্ছে... (অন্যান্য ডিভাইসে ডাটা আপডেট করতে এই বাটন ক্লিক করুন)', false);
+
+            try {
+                // 1. লোকাল ডাটা লোড করুন
+                const localData = JSON.parse(localStorage.getItem('bloodDonors')) || [];
+                
+                // 2. GitHub থেকে ডাটা আনুন
+                const remoteData = await loadFromGist();
+                
+                // 3. ডাটা মার্জ করুন
+                const mergedData = mergeDonors(localData, remoteData);
+                
+                // 4. লোকাল স্টোরেজ আপডেট করুন
+                localStorage.setItem('bloodDonors', JSON.stringify(mergedData));
+                donors = mergedData;
+                
+                // 5. GitHub এ আপডেট পাঠান
+                await updateGist(mergedData);
+                
+                showSyncStatus('ডাটা সফলভাবে সিঙ্ক হয়েছে! সব ডিভাইসে এখন আপডেটেড ডাটা দেখাবে', true);
+                
+            } catch (error) {
+                console.error('সিঙ্ক ইরর:', error);
+                
+                let errorMsg = 'সিঙ্ক করতে সমস্যা: ';
+                if (error.message.includes('Failed to fetch')) {
+                    errorMsg += 'ইন্টারনেট সংযোগ নেই বা GitHub ডাউন';
+                } else if (error.message.includes('401')) {
+                    errorMsg += 'অনুমতি সমস্যা, GitHub টোকেন চেক করুন';
+                } else if (error.message.includes('404')) {
+                    errorMsg += 'Gist খুঁজে পাওয়া যায়নি, Gist ID চেক করুন';
+                } else {
+                    errorMsg += error.message;
+                }
+                
+                showSyncStatus(errorMsg, false);
+            }
+        }
+
+        function mergeDonors(localDonors, remoteDonors) {
+            const merged = [...localDonors];
+            const existingPhones = new Set(localDonors.map(d => d.phone));
+            
+            remoteDonors.forEach(donor => {
+                if (!existingPhones.has(donor.phone)) {
+                    merged.push(donor);
+                    existingPhones.add(donor.phone);
+                }
+            });
+            
+            return merged;
+        }
+
+        // ==================== ফর্ম হ্যান্ডলিং ====================
+        document.getElementById('donorForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const donor = {
+                name: document.getElementById('name').value,
+                age: document.getElementById('age').value,
+                bloodGroup: document.getElementById('bloodGroup').value,
+                phone: document.getElementById('phone').value,
+                division: document.getElementById('division').value,
+                district: document.getElementById('district').value,
+                upazila: document.getElementById('upazila').value,
+                location: `${document.getElementById('division').value}, ${document.getElementById('district').value}, ${document.getElementById('upazila').value}`,
+                lastDonation: document.getElementById('lastDonation').value,
+                timestamp: new Date().toISOString()
+            };
+            
+            // লোকাল ডাটা আপডেট
+            donors.push(donor);
+            localStorage.setItem('bloodDonors', JSON.stringify(donors));
+            
+            // GitHub এ সেভ করার চেষ্টা করুন
+            try {
+                await updateGist(donors);
+                showSyncStatus('ধন্যবাদ! আপনার তথ্য সফলভাবে সংরক্ষণ করা হয়েছে', true);
+            } catch (error) {
+                showSyncStatus('আপনার তথ্য লোকালে সেভ হয়েছে, কিন্তু অনলাইনে সেভ হয়নি। পরে আবার সিঙ্ক করুন', false);
+            }
+            
+            this.reset();
+            document.getElementById('lastDonation').valueAsDate = new Date();
+            showSection('home');
+        });
+
+        function searchDonors() {
+            const bloodGroup = document.getElementById('searchBlood').value;
+            const division = document.getElementById('searchDivision').value;
+            const district = document.getElementById('searchDistrict').value;
+            const upazila = document.getElementById('searchUpazila').value;
+            
+            let matchedDonors = donors;
+            
+            if (bloodGroup) {
+                matchedDonors = matchedDonors.filter(donor => donor.bloodGroup === bloodGroup);
+            }
+            
+            if (division) {
+                matchedDonors = matchedDonors.filter(donor => donor.division === division);
+            }
+            
+            if (district) {
+                matchedDonors = matchedDonors.filter(donor => donor.district === district);
+            }
+            
+            if (upazila) {
+                matchedDonors = matchedDonors.filter(donor => donor.upazila === upazila);
+            }
+            
+            const donorList = document.getElementById('donorList');
+            
+            if (matchedDonors.length === 0) {
+                donorList.innerHTML = '<div class="donor-card"><p>দুঃখিত, আপনার প্রয়োজনীয় রক্তের গ্রুপের কোনো দাতা পাওয়া যায়নি। অনুগ্রহ করে কিছুক্ষণ পর আবার চেষ্টা করুন অথবা আমাদের হেল্পলাইনে যোগাযোগ করুন।</p></div>';
+            } else {
+                donorList.innerHTML = matchedDonors.map(donor => `
+                    <div class="donor-card">
+                        <h3>${donor.name}</h3>
+                        <p><strong>ব্লাড গ্রুপ:</strong> ${donor.bloodGroup}</p>
+                        <p><strong>বয়স:</strong> ${donor.age} বছর</p>
+                        <p><strong>ফোন:</strong> <a href="tel:${donor.phone}" style="color:#ff4d4d; text-decoration:none;">${donor.phone}</a></p>
+                        <p><strong>এলাকা:</strong> ${donor.location}</p>
+                        <p><strong>সর্বশেষ দান:</strong> ${formatDate(donor.lastDonation)}</p>
+                        ${canDonateAgain(donor.lastDonation) ? 
+                            '<p style="color:green; font-weight:bold;">✅ রক্তদানে প্রস্তুত</p>' : 
+                            '<p style="color:red;">⛔ আগামী ৩ মাসে রক্তদান করতে পারবেন না (সর্বশেষ দানের তারিখ: '+formatDate(donor.lastDonation)+')</p>'}
+                    </div>
+                `).join('');
+            }
+        }
+
+        // ==================== ইনিশিয়ালাইজেশন ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            // লোকাল ডাটা লোড
+            const localData = localStorage.getItem('bloodDonors');
+            if (localData) {
+                donors = JSON.parse(localData);
+            }
+            
+            // তারিখ সেট করুন
+            document.getElementById('lastDonation').valueAsDate = new Date();
+            
+            // বিভাগ এবং জেলা প্রি-সিলেক্ট করুন
+            document.getElementById('division').value = 'খুলনা';
+            loadDistricts();
+            document.getElementById('district').value = 'যশোর';
+            loadUpazilas();
+            
+            // সার্চ ফিল্ডেও একইভাবে
+            document.getElementById('searchDivision').value = 'খুলনা';
+            loadSearchDistricts();
+            document.getElementById('searchDistrict').value = 'যশোর';
+            loadSearchUpazilas();
+        });
+    </script>
+</body>
+</html>
